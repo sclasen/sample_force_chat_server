@@ -5,11 +5,11 @@
 
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.force</groupId>
-    <artifactId>sample_force_chat_server</artifactId>
+    <groupId>com.vmforce.samples</groupId>
+    <artifactId>lift-jpa-chat-server</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>sample_force_chat_server Project</name>
+    <name>Lift JPA Chat Server using vmforce</name>
     <inceptionYear>2010</inceptionYear>
     <properties>
         <scala.version>2.8.1</scala.version>
