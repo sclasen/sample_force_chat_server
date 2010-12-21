@@ -1,0 +1,30 @@
+<lift:surround with="default" at="content">
+    <div>
+    <lift:ChatRoomOps.setUsername>
+        Set User Name:
+         <name:username/>
+         <name:submit/>
+    </lift:ChatRoomOps.setUsername>
+    </div>
+    <div>
+    <lift:ChatRoomOps.list form="post">
+        Select Chat Room:
+        <room:select/>
+        <room:submit/>
+    </lift:ChatRoomOps.list>
+    </div>
+    <div>
+    <lift:ChatRoomOps.add form="post">
+         Or Create a new ChatRoom:
+         <add:name/>
+         <add:submit/>
+    </lift:ChatRoomOps.add>
+    </div>
+
+    <div id="chat">
+        <lift:ChatStart/>
+    </div>
+
+</lift:surround>
+
+

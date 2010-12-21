@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+        http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
+
+    <persistence-unit name="chatServer" transaction-type="RESOURCE_LOCAL">
+        <provider>com.salesforce.persistence.datanucleus.PersistenceProviderImpl</provider>
+        <class>com.force.sample.chat.model.ChatRoom</class>
+        <class>com.force.sample.chat.model.Message</class>
+
+        <properties>
+            <property name="datanucleus.ConnectionURL"
+                      value="sfdc:${force.endPoint}/services/Soap/u/${force.apiVersion}"/>
+            <property name="datanucleus.ConnectionUserName" value="${force.userName}"/>
+            <property name="datanucleus.ConnectionPassword" value="${force.password}"/>
+            <property name="datanucleus.autoCreateSchema" value="true"/>
+            <property name="datanucleus.validateTables" value="false"/>
+            <property name="datanucleus.validateConstraints" value="false"/>
+            <property name="datanucleus.Optimistic" value="true"/>
+            <property name="datanucleus.datastoreTransactionDelayOperations" value="true"/>
+            <property name="datanucleus.jpa.addClassTransformer" value="false"/>
+            <property name="datanucleus.cache.level2.type" value="none"/>
+            <property name="sfdcConnectionName" value="JPAConfiguredConnection"/>
+        </properties>
+
+    </persistence-unit>
+</persistence>
