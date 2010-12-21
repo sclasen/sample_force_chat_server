@@ -2,7 +2,6 @@ package com.force.sample.chat.snippet
 
 import xml.NodeSeq
 import net.liftweb.common.Empty
-import com.force.sample.chat.model.{ChatRoom, Model}
 import _root_.java.text.{ParseException, SimpleDateFormat}
 
 import _root_.scala.xml.{NodeSeq, Text}
@@ -16,6 +15,7 @@ import js.jquery.JqJsCmds
 import js.JsCmd
 import js.JsCmds.{SetHtml, Replace}
 import net.liftweb.http.S._
+import com.force.sample.chat.model.{Message, ChatRoom, Model}
 
 class ChatRoomOps {
 
@@ -77,30 +77,55 @@ class ChatRoomOps {
     bind("debug", xhtml, "debug" -> Text(debug))
   }
 
+  def msgId = msgVar.is
+
+  object msgVar extends RequestVar("")
+
+  def deleteMessage(xhtml: NodeSeq): NodeSeq = {
+    def delete() = {
+      Model.find(classOf[Message], msgId) match {
+        case Some(msg) => {
+          Model.removeAndFlush(msg)
+          redirectTo("debug.html")
+        }
+        case None => {
+          redirectTo("debug.html")
+        }
+      }
+
+    }
+
+    bind("delete", xhtml,
+      "message" -> SHtml.text("message id", msgVar(_)),
+      "submit" -> SHtml.submit(?("Delete Message"), delete)
+    )
+
+  }
+
 }
 
 object UsernameVar extends SessionVar("anonymous") {
-    override def apply(what: String) = {
-      logger.info("User:" + what)
-      super.apply(what)
-    }
+  override def apply(what: String) = {
+    logger.info("User:" + what)
+    super.apply(what)
+  }
 }
 
-object SelectedChatRoom extends SessionVar[String](""){
-    override def apply(what: String) = {
-      logger.info("ChatRoom:" + what)
-      super.apply(what)
-    }
+object SelectedChatRoom extends SessionVar[String]("") {
+  override def apply(what: String) = {
+    logger.info("ChatRoom:" + what)
+    super.apply(what)
+  }
 
-    def room: ChatRoom = {
-      Model.find(classOf[ChatRoom], this.is).get
-    }
+  def room: ChatRoom = {
+    Model.find(classOf[ChatRoom], this.is).get
+  }
 }
 
 object ChatStart {
 
   def render(xthml: NodeSeq): NodeSeq = {
-    if(SelectedChatRoom.is ne ""){
+    if (SelectedChatRoom.is ne "") {
       template
     } else {
       Text("")
@@ -112,7 +137,8 @@ object ChatStart {
       <lift:comet type="Chat" name={SelectedChatRoom.is}>
         <ul id="ul_dude">
           <chat:line>
-            <li><chat:user/>:
+            <li>
+                <chat:user/>:
                 <chat:msg/>
                 <chat:btn/>
             </li>

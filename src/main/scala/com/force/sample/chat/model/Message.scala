@@ -8,11 +8,11 @@ class Message {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   var id: String = ""
-  @Column
+  @Column(nullable = false)
   var message: String = ""
-  @Column
+  @Column(nullable = false)
   var user: String = ""
-  @Column
+  @Column(nullable = false)
   var created: Long = _
   @Column(name="chatRoom")
   @ManyToOne

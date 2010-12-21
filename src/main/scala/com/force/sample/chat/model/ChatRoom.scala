@@ -14,7 +14,7 @@ class ChatRoom {
   var name: String = ""
 
   @OneToMany(targetEntity = classOf[Message], cascade = Array(CascadeType.ALL), mappedBy="chatRoom")
-  @OrderBy("created")
+  @OrderBy("created ASC")
   var messages: JList[Message] = new JAList[Message]
 
 
