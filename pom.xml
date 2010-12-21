@@ -44,12 +44,21 @@
             <name>Force.com Maven Repo</name>
             <url>http://repo.t.salesforce.com/archiva/repository/snapshots</url>
             <releases>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>com.force.maven.release</id>
+            <name>Force.com Maven Repo</name>
+            <url>http://repo.t.salesforce.com/archiva/repository/releases</url>
+              <snapshots>
+                <enabled>false</enabled>
+              </snapshots>
+        </repository>
+
     </repositories>
 
     <pluginRepositories>
