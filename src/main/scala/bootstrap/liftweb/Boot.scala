@@ -22,7 +22,7 @@ class Boot {
 
     // Build SiteMap
     val entries = List(
-      Menu.i("Home") / "index", // the simple way to declare a menu
+      Menu.i("Lift Chat Server") / "index", // the simple way to declare a menu
       Menu.i("Room") / "room",
       Menu.i("Debug") / "debug",
       // more complex because this menu allows anything in the

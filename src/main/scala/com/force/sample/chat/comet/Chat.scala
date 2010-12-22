@@ -77,7 +77,7 @@ class ChatServer(var room: ChatRoom) extends LiftActor with ListenerManager with
 
   import ChatServer._
 
-  private var messages: List[ChatCmd] = Nil ++ JavaConversions.asScalaBuffer(room.messages).map(msg => message2AddMessage(msg))
+  private var messages: List[ChatCmd] = Nil ++ JavaConversions.asScalaBuffer(room.messages).sortBy(_.created).map(msg => message2AddMessage(msg))
 
   def createUpdate = messages
 
