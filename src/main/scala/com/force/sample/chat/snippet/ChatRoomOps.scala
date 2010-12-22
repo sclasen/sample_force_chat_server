@@ -34,13 +34,13 @@ class ChatRoomOps {
     val roomChoices = rooms.map(room => (room.id -> room.name)).toList
     bind("room", xhtml,
       "select" -> SHtml.select(roomChoices, Box(roomId), SelectedChatRoom(_)),
-      "submit" -> <input type="submit" value="go"/>)
+      "submit" -> <input type="submit" class="submit" value="go"/>)
   }
 
   def setUsername(xhtml: NodeSeq): NodeSeq = {
 
     SHtml.ajaxForm(bind("name", xhtml, "username" -> SHtml.text(username, UsernameVar(_)),
-      "submit" -> <input type="submit" value="Set"/>)
+      "submit" -> <input type="submit" class="submit" value="Set"/>)
     )
   }
 
@@ -60,7 +60,7 @@ class ChatRoomOps {
 
     bind("add", xhtml,
       "name" -> SHtml.text("Room Name", room.name = _),
-      "submit" -> SHtml.submit(?("Create Room"), doAdd)
+      "submit" -> SHtml.submit(?("Create Room"), doAdd, "class" -> "submit")
     )
 
   }
@@ -133,8 +133,9 @@ object ChatStart {
   }
 
   def template(): NodeSeq = {
-    <div>Chat Room: {SelectedChatRoom.room.name}</div>
-      <lift:comet type="Chat" name={SelectedChatRoom.is}>
+    <div id="header"><h3>Chat Room: {SelectedChatRoom.room.name}</h3></div>
+      <div id="chatDiv" class="content" style="overflow:scroll;height:480px">
+      <lift:comet type="Chat" name={SelectedChatRoom.is} >
         <ul id="ul_dude">
           <chat:line>
             <li>
@@ -148,7 +149,10 @@ object ChatStart {
             <chat:input/>
             <input type="submit" value="chat"/>
         </lift:form>
+
       </lift:comet>
+      </div>
+
   }
 
   def start(): NodeSeq = {

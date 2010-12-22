@@ -1,30 +1,52 @@
 <lift:surround with="default" at="content">
-    <div>
-    <lift:ChatRoomOps.setUsername>
-        Set User Name:
-         <name:username/>
-         <name:submit/>
-    </lift:ChatRoomOps.setUsername>
-    </div>
-    <div>
-    <lift:ChatRoomOps.list form="post">
-        Select Chat Room:
-        <room:select/>
-        <room:submit/>
-    </lift:ChatRoomOps.list>
-    </div>
-    <div>
-    <lift:ChatRoomOps.add form="post">
-         Or Create a new ChatRoom:
-         <add:name/>
-         <add:submit/>
-    </lift:ChatRoomOps.add>
+    <div id="header" class="container_3">
+        <div class="grid_1 dialog">
+            <lift:ChatRoomOps.setUsername>
+                <fieldset>
+                    <div class="field">
+                        <label>Set User Name:</label>
+                        <name:username/>
+                    </div>
+                    <div class="submit">
+                        <name:submit/>
+                    </div>
+                </fieldset>
+
+            </lift:ChatRoomOps.setUsername>
+        </div>
+        <div class="grid_1 dialog">
+            <lift:ChatRoomOps.list form="post">
+                <fieldset>
+                    <div class="field">
+                        <label>Select Chat Room:</label>
+                        <room:select/>
+                    </div>
+                    <div class="submit">
+                        <room:submit/>
+                    </div>
+                </fieldset>
+            </lift:ChatRoomOps.list>
+        </div>
+        <div class="grid_1 dialog">
+            <lift:ChatRoomOps.add form="post">
+                <fieldset>
+                    <div class="field">
+                        <label>Or Create a new ChatRoom:</label>
+                        <add:name/>
+                    </div>
+                    <div class="submit">
+                        <add:submit/>
+                    </div>
+                </fieldset>
+            </lift:ChatRoomOps.add>
+        </div>
     </div>
 
-    <div id="chat">
-        <lift:ChatStart/>
+    <div id="content" class="container_3">
+        <div id="chat" class="grid_3 dialog">
+            <lift:ChatStart/>
+        </div>
     </div>
+
 
 </lift:surround>
-
-

@@ -5,6 +5,7 @@ import common.Loggable
 import http._
 import actor._
 import js._
+import js.JE.JsRaw
 import JsCmds._
 import js.jquery.JqJsCmds.{AppendHtml, FadeOut, Hide, FadeIn}
 import java.util.Date
@@ -22,12 +23,13 @@ import com.force.sample.chat.snippet.UsernameVar
 sealed trait ChatCmd
 
 object ChatCmd {
-  def strToMsg(msg: String, user:String): AddMessage =
+  def strToMsg(msg: String, user: String): AddMessage =
     new AddMessage(null, msg, System.currentTimeMillis, user)
+
   //null right now, fix, hacking around required  GenerationType
 }
 
-final case class AddMessage(guid:String, msg: String, time: Long, user:String) extends ChatCmd {
+final case class AddMessage(guid: String, msg: String, time: Long, user: String) extends ChatCmd {
   def toMessage: Message = {
     val mess = new Message
     mess.message = msg
@@ -38,7 +40,6 @@ final case class AddMessage(guid:String, msg: String, time: Long, user:String) e
 }
 
 final case class RemoveMessage(guid: String) extends ChatCmd
-
 
 
 object ChatServer extends LocalEMF("chatServer") with ScalaEntityManager {
@@ -67,8 +68,8 @@ object ChatServer extends LocalEMF("chatServer") with ScalaEntityManager {
     mgr.close
   }
 
-  def message2AddMessage(msg:Message):AddMessage={
-     new AddMessage(msg.id, msg.message, msg.created,msg.user)
+  def message2AddMessage(msg: Message): AddMessage = {
+    new AddMessage(msg.id, msg.message, msg.created, msg.user)
   }
 }
 
@@ -98,9 +99,11 @@ class ChatServer(var room: ChatRoom) extends LiftActor with ListenerManager with
             msg.id eq d.guid
           }
         })
-        room.messages.remove(idx)
-        em.merge(room)
-        updateListeners()
+        if (idx != -1) {
+          room.messages.remove(idx)
+          em.merge(room)
+          updateListeners()
+        }
     }
   }
 
@@ -126,20 +129,23 @@ class Chat extends CometActor with CometListener {
   }
 
   def updateDeltas(what: List[ChatCmd]) {
-    partialUpdate(what.foldRight(Noop) {
+    val list = what.foldRight(Noop) {
       case (m: AddMessage, x) =>
         x & AppendHtml("ul_dude", doLine(m)) &
           Hide(m.guid) & FadeIn(m.guid, TimeSpan(0), TimeSpan(500))
       case (RemoveMessage(guid), x) =>
         x & FadeOut(guid, TimeSpan(0), TimeSpan(500)) &
           After(TimeSpan(500), Replace(guid, NodeSeq.Empty))
-    })
+    }
+    partialUpdate(list & JsRaw("var objDiv = document.getElementById('chatDiv');objDiv.scrollTop = objDiv.scrollHeight;").cmd)
   }
 
   def render =
     bind("chat", // the namespace for binding
       "line" -> lines _, // bind the function lines
-      "input" -> SHtml.text("", s => server ! strToMsg (s,currentUser)))
+      "input" -> SHtml.text("", s => server ! strToMsg(s, currentUser))
+
+   )
 
   // the input
 
@@ -150,7 +156,7 @@ class Chat extends CometActor with CometListener {
     } yield guid): _*)
 
     for {
-      m@AddMessage(guid, msg, date,user) <- msgs.reverse if !deleted.contains(guid)
+      m@AddMessage(guid, msg, date, user) <- msgs.reverse if !deleted.contains(guid)
       node <- doLine(m)
     } yield node
   }
