@@ -229,3 +229,12 @@ body .dialog#signup fieldset.submit input.submit {
     float: right;
     margin-top: 5px
 }
+
+body {
+    background-color: #040307
+}
+
+div#chatDiv.chatContent{
+    height:480px;
+    overflow:auto;
+}

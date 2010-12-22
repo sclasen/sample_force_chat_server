@@ -116,7 +116,6 @@ class Chat extends CometActor with CometListener {
   private var msgs: List[ChatCmd] = Nil
   private var bindLine: NodeSeq = Nil
   private lazy val server = ChatServer.getServer(name.get)
-  private lazy val currentUser = UsernameVar.is
 
   def registerWith = server
 
@@ -129,21 +128,21 @@ class Chat extends CometActor with CometListener {
   }
 
   def updateDeltas(what: List[ChatCmd]) {
-    val list = what.foldRight(Noop) {
+    val list = what.reverse.foldRight(Noop) {
       case (m: AddMessage, x) =>
         x & AppendHtml("ul_dude", doLine(m)) &
-          Hide(m.guid) & FadeIn(m.guid, TimeSpan(0), TimeSpan(500))
+          Hide(m.guid) & FadeIn(m.guid, TimeSpan(0), TimeSpan(500)) & After(TimeSpan(500), JsRaw("scroll()").cmd)
       case (RemoveMessage(guid), x) =>
         x & FadeOut(guid, TimeSpan(0), TimeSpan(500)) &
-          After(TimeSpan(500), Replace(guid, NodeSeq.Empty))
+          After(TimeSpan(500), Replace(guid, NodeSeq.Empty)) & After(TimeSpan(500), JsRaw("scroll()").cmd)
     }
-    partialUpdate(list & JsRaw("var objDiv = document.getElementById('chatDiv');objDiv.scrollTop = objDiv.scrollHeight;").cmd)
+    partialUpdate(list)
   }
 
   def render =
     bind("chat", // the namespace for binding
       "line" -> lines _, // bind the function lines
-      "input" -> SHtml.text("", s => server ! strToMsg(s, currentUser))
+      "input" -> SHtml.text("", s => server ! strToMsg(s, UsernameVar.is))
 
    )
 

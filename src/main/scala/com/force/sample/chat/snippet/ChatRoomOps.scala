@@ -134,7 +134,7 @@ object ChatStart {
 
   def template(): NodeSeq = {
     <div id="header"><h3>Chat Room: {SelectedChatRoom.room.name}</h3></div>
-      <div id="chatDiv" class="content" style="overflow:scroll;height:480px">
+      <div id="chatDiv" class="chatContent">
       <lift:comet type="Chat" name={SelectedChatRoom.is} >
         <ul id="ul_dude">
           <chat:line>
