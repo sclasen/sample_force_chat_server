@@ -16,6 +16,7 @@ import Loc._
  */
 class Boot {
   def boot {
+
     // where to search snippet
     LiftRules.addToPackages("com.force.sample.chat")
      // lets add Scalate
