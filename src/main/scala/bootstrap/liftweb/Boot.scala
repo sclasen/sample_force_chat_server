@@ -1,13 +1,14 @@
 package bootstrap.liftweb
 
 import net.liftweb._
-import util._
-import Helpers._
-
 import common._
 import http._
 import sitemap._
 import Loc._
+import akka.actor.Supervisor
+import akka.actor.Actor._
+import akka.config.Supervision.{Supervise, OneForOneStrategy, SupervisorConfig, Permanent}
+import com.force.sample.chat.api.ChatRoomListActor
 
 
 /**
@@ -19,7 +20,7 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("com.force.sample.chat")
-     // lets add Scalate
+
 
     // Build SiteMap
     val entries = List(
@@ -29,11 +30,11 @@ class Boot {
       // more complex because this menu allows anything in the
       // /static path to be visible
       Menu(Loc("Static", Link(List("static"), true, "/static/index"),
-	       "Static Content")))
+        "Static Content")))
 
     // set the sitemap.  Note if you don't want access control for
     // each page, just comment this line out.
-    LiftRules.setSiteMap(SiteMap(entries:_*))
+    LiftRules.setSiteMap(SiteMap(entries: _*))
 
     //Show the spinny image when an Ajax call starts
     LiftRules.ajaxStart =
@@ -45,6 +46,9 @@ class Boot {
 
     // Force the request to be UTF-8
     LiftRules.early.append(_.setCharacterEncoding("UTF-8"))
+
+    val supervisor = Supervisor(
+      SupervisorConfig(OneForOneStrategy(List(classOf[Exception]), 3, 100), Supervise(actorOf[ChatRoomListActor].start, Permanent) :: Nil))
 
   }
 }

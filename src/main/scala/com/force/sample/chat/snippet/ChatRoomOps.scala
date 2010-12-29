@@ -1,44 +1,30 @@
 package com.force.sample.chat.snippet
 
-import xml.NodeSeq
-import net.liftweb.common.Empty
-import _root_.java.text.{ParseException, SimpleDateFormat}
-
 import _root_.scala.xml.{NodeSeq, Text}
 
-import _root_.net.liftweb.util.{Helpers}
-import _root_.net.liftweb.common.{Box, Empty, Full, Loggable}
+import _root_.net.liftweb.util.Helpers
+import _root_.net.liftweb.common.Box
 import Helpers._
 import net.liftweb.http._
-import js.JE.JsRaw
-import js.jquery.JqJsCmds
-import js.JsCmd
-import js.JsCmds.{SetHtml, Replace}
 import net.liftweb.http.S._
-import com.force.sample.chat.model.{Message, ChatRoom, Model}
+import com.force.sample.chat.model.ChatRoom
+import com.force.sample.chat.api.ChatStorage
 
 class ChatRoomOps {
 
-  import SelectedChatRoom._
-
-  def getRooms = Model.createQuery[ChatRoom]("select c from ChatRoom c order by c.name").getResultList
-
   def list(xhtml: NodeSeq): NodeSeq = {
-
-    val rooms = getRooms
 
     def go() = {
       redirectTo("index.html")
     }
 
-    val roomChoices = rooms.map(room => (room.id -> room.name)).toList
+    val roomChoices = ChatStorage.it.getChatRoomSelection
     bind("room", xhtml,
       "select" -> SHtml.select(roomChoices, Box(roomId), SelectedChatRoom(_)),
       "submit" -> <input type="submit" class="submit" value="go"/>)
   }
 
   def setUsername(xhtml: NodeSeq): NodeSeq = {
-
     SHtml.ajaxForm(bind("name", xhtml, "username" -> SHtml.text(username, UsernameVar(_)),
       "submit" -> <input type="submit" class="submit" value="Set"/>)
     )
@@ -54,50 +40,13 @@ class ChatRoomOps {
 
   def add(xhtml: NodeSeq): NodeSeq = {
     def doAdd() = {
-      Model.mergeAndFlush(room)
+      ChatStorage.it.createChatRoom(room)
       redirectTo("index.html")
     }
 
     bind("add", xhtml,
       "name" -> SHtml.text("Room Name", room.name = _),
       "submit" -> SHtml.submit(?("Create Room"), doAdd, "class" -> "submit")
-    )
-
-  }
-
-
-  def debug(xhtml: NodeSeq): NodeSeq = {
-    val rooms = getRooms
-    var debug = ""
-    rooms.foreach{
-      room => {
-        debug += room.name + " messages:" + room.messages.size.toString + "<br/>"
-      }
-    }
-    bind("debug", xhtml, "debug" -> Text(debug))
-  }
-
-  def msgId = msgVar.is
-
-  object msgVar extends RequestVar("")
-
-  def deleteMessage(xhtml: NodeSeq): NodeSeq = {
-    def delete() = {
-      Model.find(classOf[Message], msgId) match {
-        case Some(msg) => {
-          Model.removeAndFlush(msg)
-          redirectTo("debug.html")
-        }
-        case None => {
-          redirectTo("debug.html")
-        }
-      }
-
-    }
-
-    bind("delete", xhtml,
-      "message" -> SHtml.text("message id", msgVar(_)),
-      "submit" -> SHtml.submit(?("Delete Message"), delete)
     )
 
   }
@@ -118,7 +67,7 @@ object SelectedChatRoom extends SessionVar[String]("") {
   }
 
   def room: ChatRoom = {
-    Model.find(classOf[ChatRoom], this.is).get
+    ChatStorage.it.getChatRoom(this.is)
   }
 }
 
@@ -133,24 +82,26 @@ object ChatStart {
   }
 
   def template(): NodeSeq = {
-    <div id="header"><h3>Chat Room: {SelectedChatRoom.room.name}</h3></div>
+    <div id="header">
+      <h3>Chat Room: {SelectedChatRoom.room.name}</h3>
+    </div>
       <div id="chatDiv" class="chatContent">
-      <lift:comet type="Chat" name={SelectedChatRoom.is} >
-        <ul id="ul_dude">
-          <chat:line>
-            <li>
-                <chat:user/>:
+        <lift:comet type="Chat" name={SelectedChatRoom.is}>
+          <ul id="ul_dude">
+            <chat:line>
+              <li>
+                  <chat:user/>:
                 <chat:msg/>
-                <chat:btn/>
-            </li>
-          </chat:line>
-        </ul>
-        <lift:form>
-            <chat:input/>
-            <input type="submit" value="chat"/>
-        </lift:form>
+                  <chat:btn/>
+              </li>
+            </chat:line>
+          </ul>
+          <lift:form>
+              <chat:input/>
+              <input type="submit" value="chat"/>
+          </lift:form>
 
-      </lift:comet>
+        </lift:comet>
       </div>
 
   }

@@ -25,6 +25,11 @@
 
     <repositories>
         <repository>
+            <id>embedded</id>
+            <name>embedded</name>
+            <url>file://${project.basedir}/embedded-repo</url>
+        </repository>
+        <repository>
             <id>scala-tools.releases</id>
             <name>Scala-Tools Dependencies Repository for Releases</name>
             <url>http://scala-tools.org/repo-releases</url>
@@ -106,7 +111,16 @@
             <version>20.0.0</version>
             <scope>runtime</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.force.akka</groupId>
+            <artifactId>akka-persistence-force_${scala.version}</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>se.scalablesolutions.akka</groupId>
+            <artifactId>akka-actor</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>
             <artifactId>lift-jpa_${scala.version}</artifactId>
@@ -164,6 +178,7 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>**/persistence.xml</include>
+                    <include>**/akka.conf</include>
                 </includes>
             </resource>
         </resources>
