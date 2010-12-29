@@ -7,9 +7,7 @@ import akka.persistence.force.ForceStorage
 import akka.actor.Actor
 import java.io.{ObjectInputStream, ByteArrayInputStream, ObjectOutputStream, ByteArrayOutputStream}
 
-object ChatStorage {
-  val it = AkkaChatStorage
-}
+
 
 trait ChatStorage {
 

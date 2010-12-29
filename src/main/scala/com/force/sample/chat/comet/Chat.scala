@@ -15,7 +15,7 @@ import java.util.concurrent.{ConcurrentHashMap => JCHMap}
 import com.force.sample.chat.model.{Message, ChatRoom}
 import ChatCmd._
 import com.force.sample.chat.snippet.UsernameVar
-import com.force.sample.chat.api.ChatStorage
+import com.force.sample.chat.api.{AkkaChatStorage, JpaChatStorage, ChatStorage}
 
 sealed trait ChatCmd
 
@@ -44,10 +44,10 @@ object ChatServer {
 
   private var chatRooms = JavaConversions.asScalaConcurrentMap(new JCHMap[String, ChatServer])
 
-  def getServer(id: String): ChatServer = {
+  def getServer(id: String, storage: ChatStorage): ChatServer = {
     chatRooms.getOrElse(id, {
-      val room = ChatStorage.it.getChatRoomWithMessages(id)
-      val server = new ChatServer(room)
+      val room = storage.getChatRoomWithMessages(id)
+      val server = new ChatServer(room, storage)
       chatRooms.putIfAbsent(id, server) match {
         case Some(other) => other
         case None => server
@@ -60,7 +60,7 @@ object ChatServer {
   }
 }
 
-class ChatServer(var room: ChatRoom) extends LiftActor with ListenerManager with Loggable {
+class ChatServer(var room: ChatRoom, storage: ChatStorage) extends LiftActor with ListenerManager with Loggable {
 
   import ChatServer._
 
@@ -71,13 +71,13 @@ class ChatServer(var room: ChatRoom) extends LiftActor with ListenerManager with
   override def lowPriority = {
     case add: AddMessage => {
       val message = add.toMessage
-      room = ChatStorage.it.addMessage(room, message)
+      room = storage.addMessage(room, message)
       messages ::= message2AddMessage(message)
       updateListeners()
     }
     case d: RemoveMessage => {
       messages ::= d
-      if (ChatStorage.it.removeMessage(room, d.guid)) {
+      if (storage.removeMessage(room, d.guid)) {
         updateListeners()
       }
 
@@ -87,12 +87,22 @@ class ChatServer(var room: ChatRoom) extends LiftActor with ListenerManager with
 
 }
 
+class JpaChat extends Chat {
+  def chatServer = ChatServer.getServer(name.get, JpaChatStorage)
+}
 
-class Chat extends CometActor with CometListener {
+class AkkaChat extends Chat {
+  def chatServer = ChatServer.getServer(name.get, AkkaChatStorage)
+}
+
+
+trait Chat extends CometActor with CometListener {
 
   private var msgs: List[ChatCmd] = Nil
   private var bindLine: NodeSeq = Nil
-  private lazy val server = ChatServer.getServer(name.get)
+  lazy val server = chatServer
+
+  def chatServer: ChatServer
 
   def registerWith = server
 

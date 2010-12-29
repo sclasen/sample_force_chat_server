@@ -1,49 +1,76 @@
 <lift:surround with="default" at="content">
-    <div id="header" class="container_3">
-        <div class="grid_1 dialog">
-            <lift:ChatRoomOps.setUsername>
-                <fieldset>
-                    <div class="field">
-                        <label>Set User Name:</label>
-                        <name:username/>
-                    </div>
-                    <div class="submit">
-                        <name:submit/>
-                    </div>
-                </fieldset>
-            </lift:ChatRoomOps.setUsername>
-        </div>
-        <div class="grid_1 dialog">
-            <lift:ChatRoomOps.list form="post">
-                <fieldset>
-                    <div class="field">
-                        <label>Select Chat Room:</label>
-                        <room:select/>
-                    </div>
-                    <div class="submit">
-                        <room:submit/>
-                    </div>
-                </fieldset>
-            </lift:ChatRoomOps.list>
-        </div>
-        <div class="grid_1 dialog">
-            <lift:ChatRoomOps.add form="post">
-                <fieldset>
-                    <div class="field">
-                        <label>Or Create a new ChatRoom:</label>
-                        <add:name/>
-                    </div>
-                    <div class="submit">
-                        <add:submit/>
-                    </div>
-                </fieldset>
-            </lift:ChatRoomOps.add>
-        </div>
+    <div id="header">
+        <h2>Lift Chat Server with Jpa->Force and Akka->Force persistence backends</h2>
     </div>
+    <div id="wrapper">
+        <div id="navigation">
+            <div class="dialog">
+                <lift:ChatRoomOps.setBackend form="post">
+                    <fieldset>
+                        <div class="field">
+                            <label>Select Backend:</label>
+                            <storage:select/>
+                        </div>
+                        <div class="submit">
+                            <storage:submit/>
+                        </div>
+                    </fieldset>
+                </lift:ChatRoomOps.setBackend>
+                <br/>
+            </div>
 
-    <div id="content" class="container_3">
-        <div id="chat" class="grid_3 dialog">
-            <lift:ChatStart/>
+            <div class="dialog">
+                <lift:ChatRoomOps.setUsername>
+                    <fieldset>
+                        <div class="field">
+                            <label>Set User Name:</label>
+                            <name:username/>
+                        </div>
+                        <div class="submit">
+                            <name:submit/>
+                        </div>
+                    </fieldset>
+                </lift:ChatRoomOps.setUsername>
+                <br/>
+            </div>
+
+
+            <div class="dialog">
+                <lift:ChatRoomOps.list form="post">
+                    <fieldset>
+                        <div class="field">
+                            <room:label/>
+                            <room:select/>
+                        </div>
+                        <div class="submit">
+                            <room:submit/>
+                        </div>
+                    </fieldset>
+                </lift:ChatRoomOps.list>
+                <br/>
+            </div>
+
+
+            <div class="dialog">
+                <lift:ChatRoomOps.add form="post">
+                    <fieldset>
+                        <div class="field">
+                            <add:label/>
+                            <add:name/>
+                        </div>
+                        <div class="submit">
+                            <add:submit/>
+                        </div>
+                    </fieldset>
+                </lift:ChatRoomOps.add>
+                <br/>
+            </div>
+        </div>
+
+        <div id="content">
+            <div id="chat" class="dialog">
+                <lift:ChatStart/>
+            </div>
         </div>
     </div>
 
