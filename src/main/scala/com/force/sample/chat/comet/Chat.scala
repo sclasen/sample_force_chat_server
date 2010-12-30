@@ -14,7 +14,7 @@ import collection.JavaConversions
 import java.util.concurrent.{ConcurrentHashMap => JCHMap}
 import com.force.sample.chat.model.{Message, ChatRoom}
 import ChatCmd._
-import com.force.sample.chat.snippet.UsernameVar
+import com.force.sample.chat.snippet.Username
 import com.force.sample.chat.api.{AkkaChatStorage, JpaChatStorage, ChatStorage}
 
 sealed trait ChatCmd
@@ -23,8 +23,6 @@ object ChatCmd {
   //for creating a new yet-to-be-persisted message
   def strToMsg(msg: String, user: String): AddMessage =
     new AddMessage(null, msg, System.currentTimeMillis, user)
-
-
 }
 
 final case class AddMessage(guid: String, msg: String, time: Long, user: String) extends ChatCmd {
@@ -42,13 +40,13 @@ final case class RemoveMessage(guid: String) extends ChatCmd
 
 object ChatServer {
 
-  private var chatRooms = JavaConversions.asScalaConcurrentMap(new JCHMap[String, ChatServer])
+  private var chatRooms = JavaConversions.asScalaConcurrentMap(new JCHMap[(String, ChatStorage), ChatServer])
 
   def getServer(id: String, storage: ChatStorage): ChatServer = {
-    chatRooms.getOrElse(id, {
+    chatRooms.getOrElse((id,storage), {
       val room = storage.getChatRoomWithMessages(id)
       val server = new ChatServer(room, storage)
-      chatRooms.putIfAbsent(id, server) match {
+      chatRooms.putIfAbsent((id,storage),server) match {
         case Some(other) => other
         case None => server
       }
@@ -129,8 +127,7 @@ trait Chat extends CometActor with CometListener {
   def render =
     bind("chat", // the namespace for binding
       "line" -> lines _, // bind the function lines
-      "input" -> SHtml.text("", s => server ! strToMsg(s, UsernameVar.is))
-
+      "input" -> SHtml.text("", s => server ! strToMsg(s, Username.is))
     )
 
   // the input

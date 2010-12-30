@@ -8,7 +8,6 @@ import akka.actor.Actor
 import java.io.{ObjectInputStream, ByteArrayInputStream, ObjectOutputStream, ByteArrayOutputStream}
 
 
-
 trait ChatStorage {
 
   def createChatRoom(room: ChatRoom): Unit
@@ -187,13 +186,6 @@ case class GetRoomSelection
 
 case class GetRoomSelectionList(list: List[(String, String)])
 
-case class GetRoomWithMessages
-
-case class GetRoomWithMessagesResponse(room: ChatRoom)
-
-case class GetRoom
-
-case class GetRoomResponse(room: ChatRoom)
 
 class ChatRoomListActor extends Actor {
 
@@ -219,6 +211,14 @@ class ChatRoomListActor extends Actor {
 
   }
 }
+
+case class GetRoomWithMessages
+
+case class GetRoomWithMessagesResponse(room: ChatRoom)
+
+case class GetRoom
+
+case class GetRoomResponse(room: ChatRoom)
 
 case class AddChatMessage(msg: Message)
 

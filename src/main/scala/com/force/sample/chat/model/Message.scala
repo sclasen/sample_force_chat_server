@@ -5,7 +5,6 @@ import reflect.BeanInfo
 import java.io.Serializable
 
 @Entity
-@BeanInfo
 class Message extends Serializable{
 
   @Id

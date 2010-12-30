@@ -6,10 +6,10 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.vmforce.samples</groupId>
-    <artifactId>lift-jpa-chat-server</artifactId>
+    <artifactId>lift-chat-server</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>Lift JPA Chat Server using vmforce</name>
+    <name>Lift Chat Server using vmforce JPA and Akka persistence</name>
     <inceptionYear>2010</inceptionYear>
     <properties>
         <scala.version>2.8.1</scala.version>

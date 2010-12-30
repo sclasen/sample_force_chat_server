@@ -1,6 +1,6 @@
 package com.force.sample.chat.snippet
 
-import _root_.scala.xml.{NodeSeq, Text}
+import _root_.scala.xml.NodeSeq
 
 import _root_.net.liftweb.util.Helpers
 import _root_.net.liftweb.common.Box
@@ -13,69 +13,64 @@ import com.force.sample.chat.api.{ChatStorage, JpaChatStorage, AkkaChatStorage}
 class ChatRoomOps {
 
   def list(xhtml: NodeSeq): NodeSeq = {
-
-    val roomChoices = BackendVar.storage.getChatRoomSelection
+    val roomChoices = Backend.storage.getChatRoomSelection
     bind("room", xhtml,
       "select" -> SHtml.select(roomChoices, Box(roomId), SelectedChatRoom(_)),
-      "label" -> <label>Select {BackendVar.descRoom}</label>,
+      "label" -> <label>Select {Backend.descRoom}</label>,
       "submit" -> <input type="submit" class="submit" value="go"/>)
   }
 
   def setUsername(xhtml: NodeSeq): NodeSeq = {
-    SHtml.ajaxForm(bind("name", xhtml, "username" -> SHtml.text(username, UsernameVar(_)),
+    SHtml.ajaxForm(bind("name", xhtml, "username" -> SHtml.text(username, Username(_)),
       "submit" -> <input type="submit" class="submit" value="Set"/>)
     )
   }
 
   def setBackend(xhtml: NodeSeq): NodeSeq = {
-
-
     val backends = List("Jpa" -> "Jpa Storage Backend", "Akka" -> "Akka StorageBackend")
 
     bind("storage", xhtml,
-      "select" -> SHtml.select(backends, Box(backend), {
-        BackendVar(_)
-      }),
+      "select" -> SHtml.select(backends, Box(backend), Backend(_)),
       "submit" -> <input type="submit" class="submit" value="go"/>)
   }
 
-  def username = UsernameVar.is
-
-  def roomId = SelectedChatRoom.is
-
-  object roomVar extends RequestVar(new ChatRoom)
-
-  def room = roomVar.is
-
-  def backend = BackendVar.is
-
   def add(xhtml: NodeSeq): NodeSeq = {
     def doAdd() = {
-      BackendVar.storage.createChatRoom(room)
+      Backend.storage.createChatRoom(newRoom)
       redirectTo("index.html")
     }
 
     bind("add", xhtml,
-      "name" -> SHtml.text("Room Name", room.name = _),
-      "label" -> <label>Or Create {BackendVar.descRoom}</label>,
+      "name" -> SHtml.text("Room Name", newRoom.name = _),
+      "label" -> <label>Or Create {Backend.descRoom}</label>,
       "submit" -> SHtml.submit(?("Create Room"), doAdd, "class" -> "submit")
     )
-
   }
+
+  def username = Username.is
+
+  def roomId = SelectedChatRoom.is
+
+  def backend = Backend.is
+
+  def newRoom = newRoomVar.is
+
+  object newRoomVar extends RequestVar(new ChatRoom)
+
 
 }
 
-object UsernameVar extends SessionVar("anonymous") {
+object Username extends SessionVar("anonymous") {
   override def apply(what: String) = {
-    logger.info("User:" + what)
+    logger.debug("User:" + what)
     super.apply(what)
   }
 
 }
 
-object BackendVar extends SessionVar("Jpa") {
+object Backend extends SessionVar("Jpa") {
   override def apply(what: String) = {
-    logger.info("Backend:" + what)
+    logger.debug("Backend:" + what)
     SelectedChatRoom("")
     super.apply(what)
   }
@@ -99,7 +94,7 @@ object BackendVar extends SessionVar("Jpa") {
   }
 
   def descRoom = {
-    if(isAkka) "an Akka ChatRoom" else "a Jpa ChatRoom"
+    if (isAkka) "an Akka ChatRoom" else "a Jpa ChatRoom"
   }
 
 }
@@ -111,7 +106,7 @@ object SelectedChatRoom extends SessionVar[String]("") {
   }
 
   def room: ChatRoom = {
-    BackendVar.storage.getChatRoom(this.is)
+    Backend.storage.getChatRoom(this.is)
   }
 }
 
@@ -121,16 +116,16 @@ object ChatStart {
     if (SelectedChatRoom.is ne "") {
       template
     } else {
-      <h2>Select or Create {BackendVar.descRoom}</h2>
+      <h2>Select or Create {Backend.descRoom}</h2>
     }
   }
 
   def template(): NodeSeq = {
     <div id="chatHeader">
-      <h2>{BackendVar.comet} Room: {SelectedChatRoom.room.name}</h2>
+      <h2>{Backend.comet} Room: {SelectedChatRoom.room.name}</h2>
     </div>
       <div id="chatDiv" class="chatContent">
-        <lift:comet type={BackendVar.comet} name={SelectedChatRoom.is}>
+        <lift:comet type={Backend.comet} name={SelectedChatRoom.is}>
           <ul id="ul_dude">
             <chat:line>
               <li>
