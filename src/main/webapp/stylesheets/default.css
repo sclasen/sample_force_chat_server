@@ -18,26 +18,6 @@ background-color:#040307;
 
 
 
-/* FAUX LAYOUT WRAPPER */
-
-
-/*
-This div is optional: When you delete it the navigation bar and the content block won't have the same size when one of them has a larger height then the other. I recommend you to leave this faux layout wrapper here.
-
-IMPORTANT: In order to make this work you have to download http://csseasy.com/layouts/fixed/background_3.gif (copy past in your address bar) and place it in the same folder as this html file. DON'T HOTLINK to this file.
-*/
-
-/*
-
-#wrapper{
-width:960px;
-background:url(background_3.gif) repeat-y; */
-/* WARNING: IF YOU CHANGE THE COLORS OF THE LAYOUT YOU HAVE TO CHANGE THIS IMAGE! *//*
-
-margin-top:10px;
-}
-*/
-
 
 /* ----- NAVIGATION ----- */
 
@@ -89,6 +69,10 @@ body .dialog {
     background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(0%, #2c263f), color-stop(100%, rgba(44, 38, 63, 0.4)));
     background-image: -moz-linear-gradient(top, #2c263f 0%, rgba(44, 38, 63, 0.4) 100%);
     background-image: linear-gradient(top, #2c263f 0%, rgba(44, 38, 63, 0.4) 100%)
+}
+
+div .spacer {
+    height: 20px;
 }
 
 body h2 {
