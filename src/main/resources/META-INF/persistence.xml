@@ -5,7 +5,7 @@
         http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
 
     <persistence-unit name="chatServer" transaction-type="RESOURCE_LOCAL">
-        <provider>com.salesforce.persistence.datanucleus.PersistenceProviderImpl</provider>
+        <provider>com.force.sdk.jpa.PersistenceProviderImpl</provider>
         <class>com.force.sample.chat.model.ChatRoom</class>
         <class>com.force.sample.chat.model.Message</class>
 
