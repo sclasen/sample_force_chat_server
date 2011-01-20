@@ -8,6 +8,7 @@ import akka.actor.Supervisor
 import akka.actor.Actor._
 import akka.config.Supervision.{Supervise, OneForOneStrategy, SupervisorConfig, Permanent}
 import com.force.sample.chat.api.ChatRoomListActor
+import com.force.sample.chat.api.RestApi
 
 
 /**
@@ -36,6 +37,9 @@ class Boot {
     //Start the supervisor for the ChatRoomListActor and the ChatRoomListActor
     val supervisor = Supervisor(
       SupervisorConfig(OneForOneStrategy(List(classOf[Exception]), 3, 100), Supervise(actorOf[ChatRoomListActor].start, Permanent) :: Nil))
+
+    LiftRules.dispatch.append(RestApi) // stateful -- associated with a servlet container session
+    LiftRules.statelessDispatchTable.append(RestApi) // stateless -- no session created
 
   }
 }
