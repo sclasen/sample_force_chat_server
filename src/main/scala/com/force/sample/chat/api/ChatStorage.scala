@@ -110,7 +110,7 @@ object AkkaChatStorage extends ChatStorage {
     SupervisorConfig(OneForOneStrategy(List(classOf[Exception]), 3, 100), Nil))
 
   private def getChatActor(roomid: String): ActorRef = {
-    val actors = ActorRegistry.actorsFor(roomid)
+    val actors = Actor.registry.actorsFor(roomid)
     log.debug("found %d actors for %s", actors.size, roomid)
     actors.size match {
       case 0 => synchronized{
@@ -123,7 +123,7 @@ object AkkaChatStorage extends ChatStorage {
   }
 
   private def getChatRoomListActor(): ActorRef = {
-    ActorRegistry.actorFor[ChatRoomListActor] match {
+    Actor.registry.actorFor[ChatRoomListActor] match {
       case Some(ref) => ref
       case None => throw new RuntimeException("Got None while looking up ChatRoomListActor")
     }
